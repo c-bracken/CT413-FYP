@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://klhcv8e8b2i0"]
+
+[ext_resource type="Script" path="res://test.gd" id="1_1fyyb"]
+[ext_resource type="NavigationPolygon" uid="uid://efshptj20ad4" path="res://new_navigation_polygon.tres" id="2_42x25"]
+[ext_resource type="Texture2D" uid="uid://orfyb8q78jlh" path="res://icon.svg" id="3_8rqj3"]
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_opo5m"]
+vertices = PackedVector2Array(446, -98, 130, -20, 130, -112, 153, -117)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(152, -128, 120, -120, 120, -8, 512, -104)])
+source_geometry_mode = 1
+source_geometry_group_name = &"pathfinding_geometry"
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_1fyyb")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="UI" type="Control" parent="Camera2D"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Cursor" type="Sprite2D" parent="."]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_8rqj3")
+
+[node name="Nav" type="Node" parent="."]
+
+[node name="Regions" type="Node" parent="Nav" groups=["pathfinding_geometry"]]
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="Nav/Regions" groups=["pathfinding_geometry"]]
+navigation_polygon = ExtResource("2_42x25")
+
+[node name="NavigationRegion2D2" type="NavigationRegion2D" parent="Nav/Regions" groups=["pathfinding_geometry"]]
+position = Vector2(-12, -6)
+navigation_polygon = SubResource("NavigationPolygon_opo5m")
+
+[node name="Walls" type="Node" parent="."]
+
+[node name="Wall" type="StaticBody2D" parent="Walls" groups=["pathfinding_geometry"]]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/Wall"]
+position = Vector2(-163, 81)
+polygon = PackedVector2Array(-18, -151, 108, -147, 65, -15, -44, -43)
+
+[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="Walls/Wall"]
+vertices = PackedVector2Array(-181, -70, -56, -66, -98, 66, -207, 38)
