@@ -17,7 +17,6 @@ func nav_setup():
 	NavigationServer2D.map_set_link_connection_radius(map, 4)
 	NavigationServer2D.map_set_active(map, true)
 	print("Map RID: %s" % map.get_id())
-	await get_tree().physics_frame
 	NavigationServer2D.region_set_map($Nav/Regions/NavigationRegion2D, map)
 	NavigationServer2D.region_set_map($Nav/Regions/NavigationRegion2D2, map)
 	NavigationServer2D.link_set_map($Nav/Links/NavigationLink2D, map)
