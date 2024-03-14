@@ -1,0 +1,27 @@
+[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dkk2ubsaebnju"]
+
+[ext_resource type="Texture2D" uid="uid://colp8vuvyuof4" path="res://new_atlas_texture.tres" id="1_krb1i"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_i6tr4"]
+texture = ExtResource("1_krb1i")
+texture_region_size = Vector2i(4, 4)
+0:0/0 = 0
+0:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:0/0/physics_layer_0/angular_velocity = 0.0
+1:0/0 = 0
+1:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:0/0/physics_layer_0/angular_velocity = 0.0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-2, -2, 2, -2, 2, 2, -2, 2)
+0:1/0 = 0
+0:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:1/0/physics_layer_0/angular_velocity = 0.0
+1:1/0 = 0
+1:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:1/0/physics_layer_0/angular_velocity = 0.0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-2, -2, 2, -2, 2, 2, -2, 2)
+
+[resource]
+tile_size = Vector2i(4, 4)
+occlusion_layer_0/light_mask = 1
+physics_layer_0/collision_layer = 1
+sources/0 = SubResource("TileSetAtlasSource_i6tr4")
