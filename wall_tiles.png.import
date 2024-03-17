@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c036qkfulrlnb"
-path="res://.godot/imported/test_tiles.png-3e822ef1e272dd62d472337ec6ef44b8.ctex"
+uid="uid://c5hjkbjb6dp0e"
+path="res://.godot/imported/wall_tiles.png-d00592bfd8f53f02727dc837411854ec.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://test_tiles.png"
-dest_files=["res://.godot/imported/test_tiles.png-3e822ef1e272dd62d472337ec6ef44b8.ctex"]
+source_file="res://wall_tiles.png"
+dest_files=["res://.godot/imported/wall_tiles.png-d00592bfd8f53f02727dc837411854ec.ctex"]
 
 [params]
 
@@ -31,4 +31,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

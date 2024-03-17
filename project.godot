@@ -31,5 +31,4 @@ left_mouse={
 
 [navigation]
 
-2d/default_edge_connection_margin=20.0
-2d/default_link_connection_radius=40.0
+2d/default_edge_connection_margin=5.0
