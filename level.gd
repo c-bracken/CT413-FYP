@@ -38,8 +38,10 @@ func _ready():
 		newPoly.add_to_group("navigation")
 		extraPolys.append(newPoly)
 		self.add_child(newPoly)
+		print("Added polygon %d to the scene" % i)
 	
 	# Rebake covered navmesh
+	print("Rebaking navmesh")
 	$Covered.bake_navigation_polygon()
 	await $Covered.bake_finished
 	print("Rebaked with subtraction")
@@ -52,6 +54,14 @@ func _ready():
 func _process(_delta):
 	if Input.is_action_just_pressed("left_mouse"):
 		var clickPos = get_viewport().get_mouse_position()
-		var clickPosWorld = clickPos - (get_viewport_rect().size / 2)
+		var clickPosWorld = (clickPos - (get_viewport_rect().size / 2)) / $Camera2D.zoom.x
 		for i in $Agents.get_children():
+			i.set_nav_layers(0b001) # First layer only; just covered areas
+			i.navigate_to(clickPosWorld)
+	
+	if Input.is_action_just_pressed("right_mouse"):
+		var clickPos = get_viewport().get_mouse_position()
+		var clickPosWorld = (clickPos - (get_viewport_rect().size / 2)) / $Camera2D.zoom.x
+		for i in $Agents.get_children():
+			i.set_nav_layers(0b011) # First and second layer; incl. exposed areas
 			i.navigate_to(clickPosWorld)

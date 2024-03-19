@@ -30,3 +30,6 @@ func velocity_computed(safe_velocity):
 
 func link_entered(_details):
 	onLink = true
+
+func set_nav_layers(layers):
+	NAV.navigation_layers = layers
