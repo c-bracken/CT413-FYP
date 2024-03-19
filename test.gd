@@ -28,23 +28,6 @@ func nav_setup():
 	print("Map agents: %s" % [NavigationServer2D.map_get_agents(map)])
 	print("Map obstacles: %s" % [NavigationServer2D.map_get_obstacles(map)])
 
-func _process(delta):
-	if Input.is_action_just_pressed("left_mouse"):
-		var clickPos = get_viewport().get_mouse_position()
-		var clickPosWorld = clickPos - (get_viewport_rect().size / 2)
-		$Cursor.transform.origin.x = int(clickPosWorld.x)
-		$Cursor.transform.origin.y = int(clickPosWorld.y)
-		#var params = NavigationPathQueryParameters2D.new()
-		#params.start_position = Vector2.ZERO
-		#params.target_position = clickPosWorld
-		#params.map = map
-		#path = NavigationPathQueryResult2D.new()
-		#NavigationServer2D.query_path(params, path)
-		#print("Path:")
-		#print(path.get_path())
-		#queue_redraw()
-		agent.navigate_to(clickPosWorld)
-
 #func _draw():
 	#if path != null:
 		#points = path.get_path()

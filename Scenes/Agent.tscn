@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://8u1idfqfvkxr"]
+
+[ext_resource type="Script" path="res://agent.gd" id="1_qbbfb"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5twk5"]
+radius = 4.0
+
+[node name="Agent" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_qbbfb")
+SPEED = 15.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_5twk5")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 5.0
+target_desired_distance = 15.0
+avoidance_enabled = true
+radius = 6.0
+max_speed = 25.0
+debug_enabled = true

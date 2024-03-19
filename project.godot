@@ -14,6 +14,10 @@ config/name="Tactical Pathfinding"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
+[debug]
+
+shapes/collision/shape_color=Color(0.305882, 0.996078, 0.396078, 0.419608)
+
 [display]
 
 window/size/viewport_width=1280
