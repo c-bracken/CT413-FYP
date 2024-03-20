@@ -1,16 +1,13 @@
 extends CharacterBody2D
 
-var viewportRectSize
-
 @export var SPEED = 30
 
 @onready var mousePos = Vector2.ZERO
 @onready var CAM = $Camera2D
-@onready var currentState: States = States.PATROL
+
+var viewportRectSize
 
 signal p_event(action, args)
-
-enum States {PATROL, SEARCH, COMBAT, DEAD}
 
 func _ready():
 	pass

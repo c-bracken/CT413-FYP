@@ -8,7 +8,13 @@ radius = 4.0
 [node name="Agent" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_qbbfb")
-SPEED = 15.0
+FAST_SPEED = 32.0
+SPEED = 24.0
+SLOW_SPEED = 16.0
+ALERT_RATE = 20.0
+ALERT_DECAY = 5.0
+ALERT_MAX = 60.0
+ALERT_SEARCH = 35.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_5twk5")
@@ -20,3 +26,28 @@ avoidance_enabled = true
 radius = 6.0
 max_speed = 25.0
 debug_enabled = true
+
+[node name="Rotation" type="Node2D" parent="."]
+
+[node name="Peripheral" type="Area2D" parent="Rotation"]
+rotation = 1.5708
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rotation/Peripheral"]
+polygon = PackedVector2Array(88, -8, 72, -88, 48, -120, 0, -136, -48, -120, -72, -88, -88, -8, 0, 8)
+
+[node name="Direct" type="Area2D" parent="Rotation"]
+rotation = 1.5708
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rotation/Direct"]
+polygon = PackedVector2Array(0, 0, -24, -56, -24, -104, -16, -112, 0, -120, 16, -112, 24, -104, 24, -56)
+
+[node name="Sprite2D" type="Sprite2D" parent="Rotation"]
+
+[connection signal="body_entered" from="Rotation/Peripheral" to="." method="_on_peripheral_body_entered"]
+[connection signal="body_exited" from="Rotation/Peripheral" to="." method="_on_peripheral_body_exited"]
+[connection signal="body_entered" from="Rotation/Direct" to="." method="_on_direct_body_entered"]
+[connection signal="body_exited" from="Rotation/Direct" to="." method="_on_direct_body_exited"]
