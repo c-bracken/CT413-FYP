@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://cj0qs2hglildt"]
+[gd_scene load_steps=7 format=3 uid="uid://cj0qs2hglildt"]
 
 [ext_resource type="Script" path="res://level.gd" id="1_2oid1"]
 [ext_resource type="TileSet" uid="uid://mmupwcr1od88" path="res://wall_tileset.tres" id="2_8rhm6"]
 [ext_resource type="PackedScene" uid="uid://8u1idfqfvkxr" path="res://Scenes/Agent.tscn" id="3_crye7"]
+[ext_resource type="PackedScene" uid="uid://dp0uqjrl15gsv" path="res://Player.tscn" id="4_ur875"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_07shj"]
 outlines = Array[PackedVector2Array]([PackedVector2Array(-192, -128, 104, -128, 104, 64, -192, 64)])
@@ -19,9 +20,6 @@ agent_radius = 20.0
 [node name="Level1" type="Node2D"]
 script = ExtResource("1_2oid1")
 EXPOSED_PADDING = 12
-
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(2.42, 2.42)
 
 [node name="TileMap" type="TileMap" parent="."]
 texture_filter = 1
@@ -49,3 +47,6 @@ position = Vector2(87, -35)
 
 [node name="Agent4" parent="Agents" instance=ExtResource("3_crye7")]
 position = Vector2(-43, -99)
+
+[node name="Player" parent="." instance=ExtResource("4_ur875")]
+position = Vector2(-107, -18)

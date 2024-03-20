@@ -50,18 +50,20 @@ func _ready():
 	print("Removing excess Polygon2D nodes")
 	for i in extraPolys:
 		i.queue_free()
+	
+	$Player.CAM.make_current()
 
 func _process(_delta):
 	if Input.is_action_just_pressed("left_mouse"):
 		var clickPos = get_viewport().get_mouse_position()
-		var clickPosWorld = (clickPos - (get_viewport_rect().size / 2)) / $Camera2D.zoom.x
+		var clickPosWorld = $Player.transform.origin + (clickPos - (get_viewport_rect().size / 2)) / $Player.CAM.zoom.x
 		for i in $Agents.get_children():
 			i.set_nav_layers(0b001) # First layer only; just covered areas
 			i.navigate_to(clickPosWorld)
 	
 	if Input.is_action_just_pressed("right_mouse"):
 		var clickPos = get_viewport().get_mouse_position()
-		var clickPosWorld = (clickPos - (get_viewport_rect().size / 2)) / $Camera2D.zoom.x
+		var clickPosWorld = $Player.transform.origin + (clickPos - (get_viewport_rect().size / 2)) / $Player.CAM.zoom.x
 		for i in $Agents.get_children():
 			i.set_nav_layers(0b011) # First and second layer; incl. exposed areas
 			i.navigate_to(clickPosWorld)
