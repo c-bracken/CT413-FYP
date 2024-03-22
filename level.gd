@@ -1,9 +1,10 @@
 extends Node2D
 
-@onready var DEFAULT_MAP: RID = get_world_2d().get_navigation_map()
-
 @export var AGENT_RADIUS: int = 4
 @export var EXPOSED_PADDING: int = 15
+@export var PLAYER: CharacterBody2D
+
+@onready var DEFAULT_MAP: RID = get_world_2d().get_navigation_map()
 
 func _ready():
 	# Navigation setup
@@ -51,19 +52,4 @@ func _ready():
 	for i in extraPolys:
 		i.queue_free()
 	
-	$Player.CAM.make_current()
-
-func _process(_delta):
-	if Input.is_action_just_pressed("left_mouse"):
-		var clickPos = get_viewport().get_mouse_position()
-		var clickPosWorld = $Player.transform.origin + (clickPos - (get_viewport_rect().size / 2)) / $Player.CAM.zoom.x
-		for i in $Agents.get_children():
-			i.set_nav_layers(0b001) # First layer only; just covered areas
-			i.navigate_to(clickPosWorld)
-	
-	if Input.is_action_just_pressed("right_mouse"):
-		var clickPos = get_viewport().get_mouse_position()
-		var clickPosWorld = $Player.transform.origin + (clickPos - (get_viewport_rect().size / 2)) / $Player.CAM.zoom.x
-		for i in $Agents.get_children():
-			i.set_nav_layers(0b011) # First and second layer; incl. exposed areas
-			i.navigate_to(clickPosWorld)
+	$Player.CAM.make_current() 

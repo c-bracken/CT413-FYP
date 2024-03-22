@@ -8,13 +8,14 @@ radius = 4.0
 [node name="Agent" type="CharacterBody2D"]
 motion_mode = 1
 script = ExtResource("1_qbbfb")
-FAST_SPEED = 32.0
 SPEED = 24.0
-SLOW_SPEED = 16.0
-ALERT_RATE = 20.0
-ALERT_DECAY = 5.0
+ALERT_RATE = 35.0
+ALERT_DECAY = -4.0
 ALERT_MAX = 60.0
-ALERT_SEARCH = 35.0
+ALERT_HUNT = 35.0
+MAX_HEALTH = 4
+WAIT_TIME = 5.0
+SHOT_TIME = 0.4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_5twk5")
@@ -46,6 +47,8 @@ collision_mask = 8
 polygon = PackedVector2Array(0, 0, -24, -56, -24, -104, -16, -112, 0, -120, 16, -112, 24, -104, 24, -56)
 
 [node name="Sprite2D" type="Sprite2D" parent="Rotation"]
+
+[node name="Target" type="Node2D" parent="."]
 
 [connection signal="body_entered" from="Rotation/Peripheral" to="." method="_on_peripheral_body_entered"]
 [connection signal="body_exited" from="Rotation/Peripheral" to="." method="_on_peripheral_body_exited"]
