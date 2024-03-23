@@ -9,6 +9,7 @@ extends CharacterBody2D
 @export var path: Array[Node2D]
 @export var WAIT_TIME: float
 @export var SHOT_TIME: float
+@export var PATH_TIME: float
 
 @onready var NAV: NavigationAgent2D = $NavigationAgent2D
 @onready var ROTATION: Node2D = $Rotation
@@ -28,16 +29,12 @@ var rayRes: Dictionary
 var player: CharacterBody2D
 var lookTimer: Timer
 var shotTimer: Timer
+var pathTimer: Timer
 
 signal seen_event(pos)
 signal no_alert
 
 enum {PATROL, LOOK, FIGHT, HUNT, DEAD}
-# PATROL - move to next patrol point
-# LOOK - look around current position
-# FIGHT - attack target
-# HUNT - chase target
-# DEAD - wait for revive
 
 func _ready():
 	NAV.velocity_computed.connect(_on_nav_velocity_computed)
@@ -46,6 +43,10 @@ func _ready():
 	lookTimer.wait_time = WAIT_TIME
 	lookTimer.one_shot = true
 	add_child(lookTimer)
+	pathTimer = Timer.new()
+	pathTimer.wait_time = PATH_TIME
+	pathTimer.timeout.connect(_on_pathtimer_timeout)
+	add_child(pathTimer)
 	set_nav_layers(0b011)
 	update_state(PATROL)
 
@@ -70,6 +71,7 @@ func _physics_process(delta):
 			if alert > ALERT_HUNT:
 				update_state(HUNT)
 			if NAV.is_navigation_finished():
+				pathNext = (pathNext + 1) % path.size()
 				update_state(LOOK)
 		# Look around from current position
 		LOOK:
@@ -80,6 +82,7 @@ func _physics_process(delta):
 		# Fight player
 		FIGHT:
 			if alert < ALERT_MAX:
+				pathTimer.stop()
 				update_state(HUNT)
 		# Chase player
 		HUNT:
@@ -117,6 +120,7 @@ func update_velocity():
 
 # Update the rotation of agent sprite & vision zones
 func update_rotation():
+	ROTATION.transform.origin = transform.origin.direction_to(lookTarget.transform.origin)
 	ROTATION.look_at(lookTarget.transform.origin)
 
 # 0b001 for covered only
@@ -133,16 +137,16 @@ func update_state(newState):
 			set_nav_layers(0b011)
 			navigate_to(path[pathNext])
 			lookTarget = TARGET
-			pathNext = (pathNext + 1) % path.size()
 		LOOK:
 			print("%s changing state to LOOK" % name)
 			behaviour = LOOK
 			lookTimer.start()
 		FIGHT:
-			print("%s changing state to COMBAT" % name)
+			print("%s changing state to FIGHT" % name)
 			behaviour = FIGHT
 			lookTarget = player
-			set_nav_layers(0b011)
+			pathTimer.start()
+			set_nav_layers(0b001)
 		HUNT:
 			print("%s changing state to HUNT" % name)
 			behaviour = HUNT
@@ -155,6 +159,7 @@ func update_state(newState):
 			behaviour = DEAD
 
 func hit():
+	alert = ALERT_MAX
 	health -= 1
 	if health <= 0:
 		update_state(DEAD)
@@ -164,6 +169,10 @@ func hit():
 func revive():
 	health = MAX_HEALTH
 	update_state(PATROL)
+
+func reset():
+	transform.origin = path[0].transform.origin
+	revive()
 
 # Navigation agent velocity computed
 func _on_nav_velocity_computed(safe_velocity):
@@ -181,3 +190,6 @@ func _on_direct_body_entered(_body):
 
 func _on_direct_body_exited(_body):
 	direct = false
+
+func _on_pathtimer_timeout():
+	navigate_to(player)

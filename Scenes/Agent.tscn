@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://8u1idfqfvkxr"]
 
-[ext_resource type="Script" path="res://agent.gd" id="1_qbbfb"]
+[ext_resource type="Script" path="res://Scripts/agent.gd" id="1_qbbfb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5twk5"]
 radius = 4.0
@@ -16,6 +16,7 @@ ALERT_HUNT = 35.0
 MAX_HEALTH = 4
 WAIT_TIME = 5.0
 SHOT_TIME = 0.4
+PATH_TIME = 0.1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_5twk5")
@@ -36,7 +37,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rotation/Peripheral"]
-polygon = PackedVector2Array(88, -8, 72, -88, 48, -120, 0, -136, -48, -120, -72, -88, -88, -8, 0, 8)
+polygon = PackedVector2Array(48, -8.00017, 47.9998, -56.0002, 23.9997, -76.0001, -0.000289599, -80, -24.0003, -75.9999, -48.0002, -55.9998, -48, -7.99983, 0, 8)
 
 [node name="Direct" type="Area2D" parent="Rotation"]
 rotation = 1.5708
@@ -44,9 +45,12 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Rotation/Direct"]
-polygon = PackedVector2Array(0, 0, -24, -56, -24, -104, -16, -112, 0, -120, 16, -112, 24, -104, 24, -56)
+polygon = PackedVector2Array(0, 0, -16, -7.99994, -24, -56, -28.0004, -112, -20.0004, -124, -0.000492319, -136, 19.9996, -124, 27.9996, -112, 24, -56, 20, -8.00007)
 
-[node name="Sprite2D" type="Sprite2D" parent="Rotation"]
+[node name="Polygon2D" type="Polygon2D" parent="Rotation"]
+use_parent_material = true
+color = Color(0.792157, 0, 0, 1)
+polygon = PackedVector2Array(4, 0, -2, -3, -4, 0, -2, 3)
 
 [node name="Target" type="Node2D" parent="."]
 

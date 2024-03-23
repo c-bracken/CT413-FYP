@@ -52,4 +52,4 @@ func _ready():
 	for i in extraPolys:
 		i.queue_free()
 	
-	$Player.CAM.make_current() 
+	$Player.CAM.make_current()

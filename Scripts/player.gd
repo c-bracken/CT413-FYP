@@ -18,6 +18,7 @@ func _process(_delta):
 	mousePos.y = clampf(get_viewport().get_mouse_position().y, 0, viewportRectSize.y)
 	$Cursor.transform.origin = (mousePos - (viewportRectSize / 2)) / CAM.zoom.x
 	CAM.transform.origin = $Cursor.transform.origin / 2
+	$Polygon2D.look_at($Cursor.transform.origin + transform.origin)
 
 func _physics_process(delta):
 	velocity = Vector2.ZERO
