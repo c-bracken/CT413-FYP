@@ -34,9 +34,6 @@ var lookTimer: Timer
 var shotTimer: Timer
 var pathTimer: Timer
 
-signal seen_event(pos)
-signal no_alert
-
 enum {PATROL, LOOK, FIGHT, HUNT, DEAD}
 
 func _ready():
@@ -176,6 +173,7 @@ func hit():
 
 func revive():
 	health = MAX_HEALTH
+	alert = 0
 	update_state(PATROL)
 
 func reset():

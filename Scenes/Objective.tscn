@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://h7bt6ydowlp4"]
+
+[ext_resource type="Script" path="res://Scripts/objective.gd" id="1_cd7ns"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wccnd"]
+
+[node name="Objective" type="Area2D"]
+script = ExtResource("1_cd7ns")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_wccnd")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+color = Color(0.0431756, 0.853327, 0.373193, 0.25098)
+polygon = PackedVector2Array(0, -8, 6, -6, 8, 0, 6, 6, 0, 8, -6, 6, -8, 0, -6, -6)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

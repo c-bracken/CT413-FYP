@@ -21,6 +21,9 @@ agent_radius = 20.0
 script = ExtResource("1_nxqw5")
 EXPOSED_PADDING = 12
 PLAYER = NodePath("Player")
+GRACE_TIME = 5.0
+LEVEL_TIME = 10.0
+PROJECTILE_SPEED = 50.0
 
 [node name="TileMap" type="TileMap" parent="."]
 texture_filter = 1
@@ -35,6 +38,8 @@ navigation_polygon = SubResource("NavigationPolygon_07shj")
 [node name="Exposed" type="NavigationRegion2D" parent="."]
 navigation_polygon = SubResource("NavigationPolygon_4ap5l")
 navigation_layers = 2
+
+[node name="Objectives" type="Node" parent="."]
 
 [node name="Agents" type="Node" parent="."]
 
@@ -58,3 +63,37 @@ position = Vector2(-175, -56)
 
 [node name="Player" parent="." instance=ExtResource("4_5ppad")]
 position = Vector2(-107, -18)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Control" type="Control" parent="Camera2D"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Camera2D/Control"]
+layout_mode = 0
+offset_right = 256.0
+offset_bottom = 40.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Camera2D/Control/VBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=white][outline_size=4][outline_color=black][b]Tactical Pathfinding[/b]
+Casey Bracken
+20921652"
+fit_content = true
+
+[node name="Start" type="Button" parent="Camera2D/Control/VBoxContainer"]
+layout_mode = 2
+text = "Start"
+
+[node name="Quit" type="Button" parent="Camera2D/Control/VBoxContainer"]
+layout_mode = 2
+text = "Quit"
+
+[connection signal="pressed" from="Camera2D/Control/VBoxContainer/Start" to="." method="start_game"]
+[connection signal="pressed" from="Camera2D/Control/VBoxContainer/Quit" to="." method="quit_game"]

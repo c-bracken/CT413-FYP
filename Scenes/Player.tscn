@@ -20,7 +20,7 @@ zoom = Vector2(3.08, 3.08)
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 color = Color(0.145098, 0.380392, 1, 1)
-polygon = PackedVector2Array(4, 0, -2, -3, -4, 0, -2, 3)
+polygon = PackedVector2Array(4, 0, -4, -3, -2, 0, -4, 3)
 
 [node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
 radius = 6.0
