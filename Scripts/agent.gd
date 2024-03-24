@@ -10,6 +10,8 @@ extends CharacterBody2D
 @export var WAIT_TIME: float
 @export var SHOT_TIME: float
 @export var PATH_TIME: float
+@export var TURN_INTERP: float
+@export var TURN_INTERP_ALERT: float
 
 @onready var NAV: NavigationAgent2D = $NavigationAgent2D
 @onready var ROTATION: Node2D = $Rotation
@@ -20,6 +22,7 @@ extends CharacterBody2D
 @onready var alertMult = 0
 @onready var health = MAX_HEALTH
 @onready var pathNext = 0
+@onready var turnSpeed = TURN_INTERP
 
 var behaviour
 var next
@@ -58,7 +61,7 @@ func navigate_to(destination):
 
 # Physics tick
 func _physics_process(delta):
-	look_at(transform.origin + Vector2.UP)
+	#look_at(transform.origin + Vector2.UP)
 	update_velocity()
 	update_rotation()
 	change_alert_rate()
@@ -115,13 +118,16 @@ func update_velocity():
 	
 	# Still on a path, set velocity
 	next = NAV.get_next_path_position()
-	TARGET.transform.origin = next
+	if behaviour == PATROL:
+		TARGET.transform.origin = next
+	elif behaviour == HUNT:
+		TARGET.transform.origin = NAV.get_final_position()
 	NAV.set_velocity(transform.origin.direction_to(next) * SPEED)
 
 # Update the rotation of agent sprite & vision zones
 func update_rotation():
-	ROTATION.transform.origin = transform.origin.direction_to(lookTarget.transform.origin)
-	ROTATION.look_at(lookTarget.transform.origin)
+	var targetTransform = ROTATION.transform.looking_at(lookTarget.transform.origin - transform.origin)
+	ROTATION.transform = ROTATION.transform.interpolate_with(targetTransform, turnSpeed)
 
 # 0b001 for covered only
 # 0b011 for covered and exposed
@@ -140,6 +146,7 @@ func update_state(newState):
 		LOOK:
 			print("%s changing state to LOOK" % name)
 			behaviour = LOOK
+			turnSpeed = TURN_INTERP
 			lookTimer.start()
 		FIGHT:
 			print("%s changing state to FIGHT" % name)
@@ -152,6 +159,7 @@ func update_state(newState):
 			behaviour = HUNT
 			alert = clamp(alert, ALERT_HUNT, 0.9 * ALERT_MAX)
 			lookTarget = TARGET
+			turnSpeed = TURN_INTERP_ALERT
 			set_nav_layers(0b001)
 			navigate_to(player)
 		_:
