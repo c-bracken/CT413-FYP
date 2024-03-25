@@ -41,6 +41,12 @@ func _ready():
 	
 	for i in objectives:
 		i.objective_reached.connect(update_score)
+	
+	for i in agents:
+		i.shoot.connect(create_projectile)
+	$Player.shoot.connect(create_projectile)
+	
+	$Player.dead.connect(end_game)
 
 # Set up navigation areas
 func navigation_setup():
@@ -97,8 +103,9 @@ func start_game():
 	levelItems = min(3 + floor(level * 0.4), 12)
 	score = 0
 	$Player.transform.origin = Vector2.ZERO
+	$Player.revive()
 	$Player.CAM.make_current()
-	$Camera2D/Control.visible = false
+	$Camera2D/CanvasLayer/Control.visible = false
 	start_level()
 
 # Advance to next level
@@ -124,9 +131,10 @@ func end_game():
 	print("Ending game")
 	if score > highscore:
 		highscore = score
-	# kill agents
+	for i in agents:
+		i.kill()
 	$Camera2D.make_current()
-	$Camera2D/Control.visible = true
+	$Camera2D/CanvasLayer/Control.visible = true
 
 # Create enemy or player projectile
 func create_projectile(pos: Vector2, dir: Vector2, player: bool = false):
@@ -134,7 +142,11 @@ func create_projectile(pos: Vector2, dir: Vector2, player: bool = false):
 	add_child(newProj)
 	newProj.transform.origin = pos
 	newProj.apply_central_impulse(dir * PROJECTILE_SPEED)
-
+	if player:
+		newProj.collision_mask = 0b010010
+	else:
+		newProj.collision_mask = 0b001010
+	newProj.hit.connect(target_hit)
 # Increase the player's score
 func update_score():
 	print("Increasing score")
@@ -146,3 +158,6 @@ func level_timer_expired():
 
 func quit_game():
 	get_tree().quit()
+
+func target_hit(body):
+	body.hit()

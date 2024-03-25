@@ -23,6 +23,7 @@ extends CharacterBody2D
 @onready var health = MAX_HEALTH
 @onready var pathNext = 0
 @onready var turnSpeed = TURN_INTERP
+@onready var canShoot = true
 
 var behaviour
 var next
@@ -36,6 +37,8 @@ var pathTimer: Timer
 
 enum {PATROL, LOOK, FIGHT, HUNT, DEAD}
 
+signal shoot(pos, dir, isPlayer)
+
 func _ready():
 	NAV.velocity_computed.connect(_on_nav_velocity_computed)
 	player = get_tree().root.get_child(0).PLAYER
@@ -47,8 +50,12 @@ func _ready():
 	pathTimer.wait_time = PATH_TIME
 	pathTimer.timeout.connect(_on_pathtimer_timeout)
 	add_child(pathTimer)
+	shotTimer = Timer.new()
+	shotTimer.wait_time = SHOT_TIME
+	add_child(shotTimer)
 	set_nav_layers(0b011)
-	update_state(PATROL)
+	lookTarget = TARGET
+	update_state(DEAD)
 
 # Navigate to new position
 func navigate_to(destination):
@@ -58,11 +65,11 @@ func navigate_to(destination):
 
 # Physics tick
 func _physics_process(delta):
-	#look_at(transform.origin + Vector2.UP)
 	update_velocity()
-	update_rotation()
-	change_alert_rate()
-	alert = clampf(alert + (ALERT_RATE * alertMult * delta), 0, ALERT_MAX)
+	if behaviour != DEAD:
+		update_rotation()
+		change_alert_rate()
+		alert = clampf(alert + (ALERT_RATE * alertMult * delta), 0, ALERT_MAX)
 	
 	# Trigger state changes
 	match behaviour:
@@ -81,8 +88,10 @@ func _physics_process(delta):
 				update_state(PATROL)
 		# Fight player
 		FIGHT:
+			agent_shoot()
 			if alert < ALERT_MAX:
 				pathTimer.stop()
+				shotTimer.stop()
 				update_state(HUNT)
 		# Chase player
 		HUNT:
@@ -120,6 +129,8 @@ func update_velocity():
 	elif behaviour == HUNT:
 		TARGET.transform.origin = NAV.get_final_position()
 	NAV.set_velocity(transform.origin.direction_to(next) * SPEED)
+	if behaviour == DEAD:
+		NAV.set_velocity(Vector2.ZERO)
 
 # Update the rotation of agent sprite & vision zones
 func update_rotation():
@@ -150,7 +161,7 @@ func update_state(newState):
 			behaviour = FIGHT
 			lookTarget = player
 			pathTimer.start()
-			set_nav_layers(0b001)
+			shotTimer.start()
 		HUNT:
 			print("%s changing state to HUNT" % name)
 			behaviour = HUNT
@@ -162,23 +173,37 @@ func update_state(newState):
 		_:
 			print("%s changing state to DEAD" % name)
 			behaviour = DEAD
+			$Rotation/Polygon2D.color = 0x888888FF
+			lookTimer.stop()
+			pathTimer.stop()
+			shotTimer.stop()
 
 func hit():
-	alert = ALERT_MAX
+	alert = 0.9 * ALERT_MAX
 	health -= 1
 	if health <= 0:
-		update_state(DEAD)
-		await get_tree().root.get_child(0).next_level
-		revive()
+		kill()
 
 func revive():
 	health = MAX_HEALTH
 	alert = 0
+	pathNext = 0
+	$Rotation/Polygon2D.color = 0xCA0000FF
 	update_state(PATROL)
 
 func reset():
 	transform.origin = path[0].transform.origin
 	revive()
+
+func agent_shoot():
+	if canShoot:
+		canShoot = false
+		shoot.emit(transform.origin, transform.origin.direction_to(player.transform.origin), false)
+		await shotTimer.timeout
+		canShoot = true
+
+func kill():
+	update_state(DEAD)
 
 # Navigation agent velocity computed
 func _on_nav_velocity_computed(safe_velocity):

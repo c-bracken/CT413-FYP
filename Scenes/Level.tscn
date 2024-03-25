@@ -66,7 +66,9 @@ position = Vector2(-107, -18)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="Control" type="Control" parent="Camera2D"]
+[node name="CanvasLayer" type="CanvasLayer" parent="Camera2D"]
+
+[node name="Control" type="Control" parent="Camera2D/CanvasLayer"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -74,12 +76,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Camera2D/Control"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Camera2D/CanvasLayer/Control"]
 layout_mode = 0
-offset_right = 256.0
-offset_bottom = 40.0
+offset_right = 281.0
+offset_bottom = 139.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Camera2D/Control/VBoxContainer"]
+[node name="Title" type="RichTextLabel" parent="Camera2D/CanvasLayer/Control/VBoxContainer"]
 layout_mode = 2
 bbcode_enabled = true
 text = "[color=white][outline_size=4][outline_color=black][b]Tactical Pathfinding[/b]
@@ -87,13 +91,17 @@ Casey Bracken
 20921652"
 fit_content = true
 
-[node name="Start" type="Button" parent="Camera2D/Control/VBoxContainer"]
+[node name="Start" type="Button" parent="Camera2D/CanvasLayer/Control/VBoxContainer"]
 layout_mode = 2
 text = "Start"
 
-[node name="Quit" type="Button" parent="Camera2D/Control/VBoxContainer"]
+[node name="Quit" type="Button" parent="Camera2D/CanvasLayer/Control/VBoxContainer"]
 layout_mode = 2
 text = "Quit"
 
-[connection signal="pressed" from="Camera2D/Control/VBoxContainer/Start" to="." method="start_game"]
-[connection signal="pressed" from="Camera2D/Control/VBoxContainer/Quit" to="." method="quit_game"]
+[node name="Highscore" type="RichTextLabel" parent="Camera2D/CanvasLayer/Control/VBoxContainer"]
+layout_mode = 2
+text = "[color=white][outline_size=4][outline_color=black][i]High Score:"
+
+[connection signal="pressed" from="Camera2D/CanvasLayer/Control/VBoxContainer/Start" to="." method="start_game"]
+[connection signal="pressed" from="Camera2D/CanvasLayer/Control/VBoxContainer/Quit" to="." method="quit_game"]

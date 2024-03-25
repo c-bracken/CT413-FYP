@@ -9,6 +9,8 @@ radius = 4.0
 collision_layer = 9
 motion_mode = 1
 script = ExtResource("1_ddiln")
+SHOT_TIME = 0.3
+MAX_HEALTH = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_b3nob")
