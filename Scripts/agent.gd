@@ -12,6 +12,7 @@ extends CharacterBody2D
 @export var PATH_TIME: float
 @export var TURN_INTERP: float
 @export var TURN_INTERP_ALERT: float
+@export var PLAYER: CharacterBody2D
 
 @onready var NAV: NavigationAgent2D = $NavigationAgent2D
 @onready var ROTATION: Node2D = $Rotation
@@ -30,7 +31,6 @@ var next
 var lookTarget
 var rayQuery: PhysicsRayQueryParameters2D
 var rayRes: Dictionary
-var player: CharacterBody2D
 var lookTimer: Timer
 var shotTimer: Timer
 var pathTimer: Timer
@@ -41,7 +41,6 @@ signal shoot(pos, dir, isPlayer)
 
 func _ready():
 	NAV.velocity_computed.connect(_on_nav_velocity_computed)
-	player = get_tree().root.get_child(0).PLAYER
 	lookTimer = Timer.new()
 	lookTimer.wait_time = WAIT_TIME
 	lookTimer.one_shot = true
@@ -82,7 +81,8 @@ func _physics_process(delta):
 				update_state(LOOK)
 		# Look around from current position
 		LOOK:
-			if alert > ALERT_HUNT and rayRes.collider == player and (direct or peripheral):
+			if alert > ALERT_HUNT and (direct or peripheral) and rayRes.collider == PLAYER:
+				TARGET.transform.origin = PLAYER.transform.origin
 				update_state(HUNT)
 			if lookTimer.time_left == 0:
 				update_state(PATROL)
@@ -107,13 +107,13 @@ func change_alert_rate():
 	alertMult = ALERT_DECAY
 	# Player in vision zones
 	if peripheral or direct:
-		rayQuery = PhysicsRayQueryParameters2D.create(transform.origin, player.transform.origin)
+		rayQuery = PhysicsRayQueryParameters2D.create(transform.origin, PLAYER.transform.origin, 0b01010)
 		rayQuery.exclude = [self]
 		rayRes = get_world_2d().direct_space_state.intersect_ray(rayQuery)
 		# Raycast hits
 		if rayRes:
 			# Raycast hits player
-			if rayRes.collider == player:
+			if rayRes.collider == PLAYER:
 				alertMult = (0.4 if peripheral else 0.0) + (0.6 if direct else 0.0)
 	if behaviour == HUNT:
 		alertMult = max(alertMult, 0)
@@ -159,7 +159,7 @@ func update_state(newState):
 		FIGHT:
 			print("%s changing state to FIGHT" % name)
 			behaviour = FIGHT
-			lookTarget = player
+			lookTarget = PLAYER
 			pathTimer.start()
 			shotTimer.start()
 		HUNT:
@@ -169,7 +169,7 @@ func update_state(newState):
 			lookTarget = TARGET
 			turnSpeed = TURN_INTERP_ALERT
 			set_nav_layers(0b001)
-			navigate_to(player)
+			navigate_to(PLAYER)
 		_:
 			print("%s changing state to DEAD" % name)
 			behaviour = DEAD
@@ -178,12 +178,16 @@ func update_state(newState):
 			pathTimer.stop()
 			shotTimer.stop()
 
+# Agent hit by projectile
 func hit():
 	alert = 0.9 * ALERT_MAX
+	if behaviour in [PATROL, LOOK]:
+		TARGET.transform.origin = PLAYER.transform.origin
 	health -= 1
 	if health <= 0:
 		kill()
 
+# Revive the agent to MAX_HEALTH
 func revive():
 	health = MAX_HEALTH
 	alert = 0
@@ -191,36 +195,44 @@ func revive():
 	$Rotation/Polygon2D.color = 0xCA0000FF
 	update_state(PATROL)
 
+# Reset the position of and revive the agent
 func reset():
 	transform.origin = path[0].transform.origin
 	revive()
 
+# Allow the agent to fire projectiles at appropriate intervals
 func agent_shoot():
 	if canShoot:
 		canShoot = false
-		shoot.emit(transform.origin, transform.origin.direction_to(player.transform.origin), false)
+		shoot.emit(transform.origin, transform.origin.direction_to(PLAYER.transform.origin), false)
 		await shotTimer.timeout
 		canShoot = true
 
+# Kill the agent
 func kill():
 	update_state(DEAD)
 
-# Navigation agent velocity computed
+# Navigation agent velocity computed, move agent
 func _on_nav_velocity_computed(safe_velocity):
 	velocity = safe_velocity
 	move_and_slide()
 
+# Player enters peripheral vision
 func _on_peripheral_body_entered(_body):
 	peripheral = true
 
+# Player leaves peripheral vision
 func _on_peripheral_body_exited(_body):
 	peripheral = false
 
+# Player enters direct vision
 func _on_direct_body_entered(_body):
 	direct = true
 
+# Player leaves direct vision
 func _on_direct_body_exited(_body):
 	direct = false
 
+# pathTimer times out, request another path to the player
 func _on_pathtimer_timeout():
-	navigate_to(player)
+	navigate_to(PLAYER)

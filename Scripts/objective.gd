@@ -4,17 +4,19 @@ extends Area2D
 
 signal objective_reached
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	deactivate()
 
 # Activate objective
 func activate():
-	pass
+	print("Activating %s" % name)
+	$CollisionShape2D.set_deferred("disabled", false)
+	$Polygon2D.visible = true
 
 # Deactivate objective
 func deactivate():
-	pass
+	$CollisionShape2D.set_deferred("disabled", true)
+	$Polygon2D.visible = false
 
 func _on_body_entered(body):
 	objective_reached.emit()

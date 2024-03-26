@@ -15,6 +15,7 @@ var shotTimer: Timer
 
 signal shoot(pos, dir, isPlayer)
 signal dead
+signal p_hit
 
 func _ready():
 	shotTimer = Timer.new()
@@ -55,5 +56,6 @@ func revive():
 
 func hit():
 	health -= 1
+	p_hit.emit()
 	if health <= 0:
 		dead.emit()

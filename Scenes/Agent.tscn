@@ -16,7 +16,7 @@ ALERT_MAX = 60.0
 ALERT_HUNT = 35.0
 MAX_HEALTH = 4
 WAIT_TIME = 5.0
-SHOT_TIME = 0.4
+SHOT_TIME = 0.7
 PATH_TIME = 0.25
 TURN_INTERP = 0.02
 TURN_INTERP_ALERT = 0.07
@@ -25,7 +25,7 @@ TURN_INTERP_ALERT = 0.07
 shape = SubResource("CircleShape2D_5twk5")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
-path_desired_distance = 5.0
+path_desired_distance = 3.0
 target_desired_distance = 15.0
 avoidance_enabled = true
 radius = 6.0

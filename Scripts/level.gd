@@ -9,14 +9,15 @@ extends Node2D
 
 @onready var DEFAULT_MAP: RID = get_world_2d().get_navigation_map()
 @onready var highscore = 0
+@onready var lastScore = 0
 @onready var PROJECTILE: PackedScene = preload("res://Scenes/Projectile.tscn")
 
 var level
 var score
 var levelItems
+var itemsLeft
 var projectile: RigidBody2D
 var graceTimer: Timer
-var levelTimer: Timer
 var agents: Array[Node]
 var objectives: Array[Node]
 
@@ -29,24 +30,20 @@ func _ready():
 	graceTimer.one_shot = true
 	add_child(graceTimer)
 	
-	levelTimer = Timer.new()
-	levelTimer.wait_time = LEVEL_TIME
-	levelTimer.one_shot = true
-	levelTimer.timeout.connect(level_timer_expired)
-	add_child(levelTimer)
-	
 	agents = $Agents.get_children()
 	objectives = $Objectives.get_children()
 	$Camera2D.make_current()
 	
 	for i in objectives:
-		i.objective_reached.connect(update_score)
+		i.objective_reached.connect(objective_monitor)
 	
 	for i in agents:
 		i.shoot.connect(create_projectile)
 	$Player.shoot.connect(create_projectile)
 	
 	$Player.dead.connect(end_game)
+	$Player.p_hit.connect(update_game_ui)
+	update_highscore()
 
 # Set up navigation areas
 func navigation_setup():
@@ -100,26 +97,37 @@ func start_game():
 	for i in agents:
 		i.reset()
 	level = 0
-	levelItems = min(3 + floor(level * 0.4), 12)
 	score = 0
 	$Player.transform.origin = Vector2.ZERO
 	$Player.revive()
 	$Player.CAM.make_current()
-	$Camera2D/CanvasLayer/Control.visible = false
+	$Menu.visible = false
+	update_game_ui()
+	$GameUI.visible = true
 	start_level()
 
 # Advance to next level
 func next_level():
 	print("Advancing to next level")
 	level += 1
+	for i in agents:
+		i.kill()
 	grace_period()
 
 func start_level():
 	print("Starting level")
 	for i in agents:
 		i.revive()
-	# place objects randomly
-	levelTimer.start()
+	levelItems = min(3 + floor(level * 0.4), objectives.size())
+	itemsLeft = levelItems
+	update_game_ui()
+	randomize_objectives()
+
+func objective_monitor():
+	itemsLeft -= 1
+	update_score()
+	if itemsLeft == 0:
+		next_level()
 
 func grace_period():
 	print("Grace period begins")
@@ -129,12 +137,15 @@ func grace_period():
 
 func end_game():
 	print("Ending game")
+	lastScore = score
 	if score > highscore:
 		highscore = score
+	update_highscore()
 	for i in agents:
 		i.kill()
 	$Camera2D.make_current()
-	$Camera2D/CanvasLayer/Control.visible = true
+	$Menu.visible = true
+	$GameUI.visible = false
 
 # Create enemy or player projectile
 func create_projectile(pos: Vector2, dir: Vector2, player: bool = false):
@@ -147,17 +158,35 @@ func create_projectile(pos: Vector2, dir: Vector2, player: bool = false):
 	else:
 		newProj.collision_mask = 0b001010
 	newProj.hit.connect(target_hit)
+
 # Increase the player's score
 func update_score():
 	print("Increasing score")
-	score += floor(levelItems * (levelTimer.time_left + level))
-
-# Set enemies to aggressive when timer expires
-func level_timer_expired():
-	print("Level timer expired")
+	score += floor(levelItems + level)
+	update_game_ui()
 
 func quit_game():
 	get_tree().quit()
 
 func target_hit(body):
 	body.hit()
+
+func update_highscore():
+	$Menu/Control/VBoxContainer/Highscore.text = "[color=white][outline_size=4][outline_color=black][i]High Score: %d\nLast Score: %d" % [highscore, lastScore]
+
+func randomize_objectives():
+	print("Randomizing %d level items" % levelItems)
+	var chosen = 0
+	for i in range(objectives.size()):
+		if chosen == levelItems: return
+		var prob = float(levelItems - chosen) / float(objectives.size() - i)
+		print("Probability objective %d is chosen: %.3f" % [i, prob])
+		if randf() <= prob:
+			print("Activating objective %d" % i)
+			chosen += 1
+			objectives[i].activate()
+
+func update_game_ui():
+	$GameUI/Control/HBoxContainer/RichTextLabel.text = "[color=white][outline_size=4][outline_color=black]Level: %d\nObjectives left: %d" % [level, itemsLeft] #level/objectives left
+	$GameUI/Control/HBoxContainer/RichTextLabel2.text = "[center][color=white][outline_size=4][outline_color=black]Health: %d" % $Player.health #player health
+	$GameUI/Control/HBoxContainer/RichTextLabel3.text = "[right][color=white][outline_size=4][outline_color=black]Score: %d" % score #player score
